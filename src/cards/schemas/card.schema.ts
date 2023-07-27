@@ -1,36 +1,32 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose from 'mongoose';
+import { User } from 'src/users/schemas/user.schema';
 
-export type CardDocument = Card & Document;
+export enum Category {
+  PHYSICS = 'Physics',
+  TECHNOLOGY = 'Technology',
+  CHEMISTRY = 'Chemistry',
+  Sociology = 'Sociology',
+}
 
-@Schema()
+@Schema({
+  timestamps: true,
+})
 export class Card {
-  @Prop()
-  id: string;
-
-  @Prop()
+  @Prop({ required: true })
   name: string;
 
-  @Prop()
+  @Prop({ required: true })
   status: boolean;
 
-  @Prop()
+  @Prop({ required: true })
   content: string;
 
-  @Prop()
-  category: string;
+  @Prop({ required: true })
+  category: Category;
 
-  @Prop()
-  author_id: string;
-
-  @Prop()
-  createdAt: Date;
-
-  @Prop()
-  updatedAt: Date;
-
-  @Prop()
-  deletedAt: Date;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+  user: User;
 }
 
 export const CardSchema = SchemaFactory.createForClass(Card);
