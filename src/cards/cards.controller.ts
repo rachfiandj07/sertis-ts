@@ -16,19 +16,24 @@ import { CreateCardDTO } from './dto/createCard.dto';
 import { UpdateCardDTO } from './dto/updateCard.dto';
 import { RequestContext } from '../users/context/context';
 import { CardResponse } from './interfaces/card';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('cards')
 @Controller('cards')
 export class CardsController {
   constructor(private cardService: CardsService) {}
 
   @Get()
   @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  @ApiQuery({ name: 'page', required: false, type: Number })
   async getAllCards(@Query() query: ExpressQuery): Promise<CardResponse[]> {
     return this.cardService.findAll(query);
   }
 
   @Post()
   @UseGuards(AuthGuard())
+  @ApiBearerAuth()
   async createCard(
     @Body()
     card: CreateCardDTO,
@@ -40,6 +45,7 @@ export class CardsController {
 
   @Get(':id')
   @UseGuards(AuthGuard())
+  @ApiBearerAuth()
   async getCard(
     @Param('id')
     id: string,
@@ -49,6 +55,7 @@ export class CardsController {
 
   @Put(':id')
   @UseGuards(AuthGuard())
+  @ApiBearerAuth()
   async updateCard(
     @Param('id')
     id: string,
@@ -62,6 +69,7 @@ export class CardsController {
 
   @Delete(':id')
   @UseGuards(AuthGuard())
+  @ApiBearerAuth()
   async deleteCard(
     @Param('id')
     id: string,
