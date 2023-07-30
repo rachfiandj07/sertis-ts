@@ -1,8 +1,12 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDTO } from 'src/users/dto/signUp.dto';
 import { SignInDTO } from './dto/signIn.dto';
@@ -22,27 +26,31 @@ export class UsersService {
     // Generate random, ie : 0.123456
     // Convert to base36, ie : "0.4fzyo82mvyr"
     // Cut off last 8 characters, ie : "yo82mvyr"
-    const randomGeneratedPassowrd: string = Math.random()
+    const randomGeneratedPassword: string = Math.random()
       .toString(36)
       .slice(-8);
 
-    const hashedPassword = await bcrypt.hash(randomGeneratedPassowrd, 10);
+    const hashedPassword = await bcrypt.hash(randomGeneratedPassword, 10);
 
-    const user = await this.userModel.create({
-      username,
-      password: hashedPassword,
-    });
+    try {
+      const user = await this.userModel.create({
+        username,
+        password: hashedPassword,
+      });
 
-    const token = this.jwtService.sign({
-      id: user._id,
-    });
+      const token = this.jwtService.sign({ id: user._id });
 
-    const createUserResponse: CreateUserResponse = {
-      password: randomGeneratedPassowrd,
-      token: token,
-    };
+      const createUserResponse: CreateUserResponse = {
+        password: randomGeneratedPassword,
+        token: token,
+      };
 
-    return createUserResponse;
+      return createUserResponse;
+    } catch (error) {
+      if (error?.code === 11000) {
+        throw new ConflictException('Duplicate Email Entered');
+      }
+    }
   }
 
   async signIn(signInDto: SignInDTO): Promise<LoginUserResponse> {
