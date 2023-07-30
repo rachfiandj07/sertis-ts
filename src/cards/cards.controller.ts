@@ -23,7 +23,7 @@ export class CardsController {
 
   @Get()
   @UseGuards(AuthGuard())
-  async getAllBooks(@Query() query: ExpressQuery): Promise<CardResponse[]> {
+  async getAllCards(@Query() query: ExpressQuery): Promise<CardResponse[]> {
     return this.cardService.findAll(query);
   }
 
