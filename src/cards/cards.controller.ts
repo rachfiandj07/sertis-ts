@@ -14,7 +14,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { CardsService } from './cards.service';
 import { CreateCardDTO } from './dto/createCard.dto';
 import { UpdateCardDTO } from './dto/updateCard.dto';
-import { RequestContext } from 'src/users/context/context';
+import { RequestContext } from '../users/context/context';
 import { CardResponse } from './interfaces/card';
 
 @Controller('cards')
