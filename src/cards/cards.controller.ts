@@ -29,7 +29,7 @@ export class CardsController {
 
   @Post()
   @UseGuards(AuthGuard())
-  async createBook(
+  async createCard(
     @Body()
     card: CreateCardDTO,
     @RequestContext() requestContext,
@@ -40,7 +40,7 @@ export class CardsController {
 
   @Get(':id')
   @UseGuards(AuthGuard())
-  async getBook(
+  async getCard(
     @Param('id')
     id: string,
   ): Promise<CardResponse> {
@@ -49,7 +49,7 @@ export class CardsController {
 
   @Put(':id')
   @UseGuards(AuthGuard())
-  async updateBook(
+  async updateCard(
     @Param('id')
     id: string,
     @Body()
@@ -62,7 +62,7 @@ export class CardsController {
 
   @Delete(':id')
   @UseGuards(AuthGuard())
-  async deleteBook(
+  async deleteCard(
     @Param('id')
     id: string,
     @RequestContext() requestContext,
