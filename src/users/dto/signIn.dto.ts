@@ -1,13 +1,13 @@
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class SignInDTO {
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(5)
+  @IsNotEmpty({ message: "Username can't be empty " })
+  @IsString({ message: 'Username must contain string ' })
+  @MinLength(5, { message: 'Username must be more than 5 words' })
   readonly username: string;
 
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(5)
+  @IsNotEmpty({ message: "Password can't be empty " })
+  @IsString({ message: 'Password must contain string ' })
+  @MinLength(5, { message: 'Password must be more than 5 words' })
   readonly password: string;
 }

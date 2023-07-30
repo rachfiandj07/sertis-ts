@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDTO } from 'src/users/dto/signUp.dto';
 import { SignInDTO } from './dto/signIn.dto';
+import { CreateUserResponse, LoginUserResponse } from './interface/User';
 
 @Injectable()
 export class UsersService {
@@ -15,10 +16,17 @@ export class UsersService {
     private jwtService: JwtService,
   ) {}
 
-  async signUp(signUpDTO: SignUpDTO): Promise<{ token: string }> {
-    const { username, password } = signUpDTO;
+  async signUp(signUpDTO: SignUpDTO): Promise<CreateUserResponse> {
+    const { username } = signUpDTO;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Generate random, ie : 0.123456
+    // Convert to base36, ie : "0.4fzyo82mvyr"
+    // Cut off last 8 characters, ie : "yo82mvyr"
+    const randomGeneratedPassowrd: string = Math.random()
+      .toString(36)
+      .slice(-8);
+
+    const hashedPassword = await bcrypt.hash(randomGeneratedPassowrd, 10);
 
     const user = await this.userModel.create({
       username,
@@ -29,10 +37,15 @@ export class UsersService {
       id: user._id,
     });
 
-    return { token };
+    const createUserResponse: CreateUserResponse = {
+      password: randomGeneratedPassowrd,
+      token: token,
+    };
+
+    return createUserResponse;
   }
 
-  async signIn(signInDto: SignInDTO): Promise<{ token: string }> {
+  async signIn(signInDto: SignInDTO): Promise<LoginUserResponse> {
     const { username, password } = signInDto;
 
     const user = await this.userModel.findOne({ username });
@@ -49,6 +62,10 @@ export class UsersService {
 
     const token = this.jwtService.sign({ id: user._id });
 
-    return { token };
+    const loginUserResponse: LoginUserResponse = {
+      token: token,
+    };
+
+    return loginUserResponse;
   }
 }

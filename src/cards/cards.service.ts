@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import { Query } from 'express-serve-static-core';
 import { User } from 'src/users/schemas/user.schema';
 import { Card } from './schemas/card.schema';
+import { CardResponse } from './interfaces/card';
 
 @Injectable()
 export class CardsService {
@@ -16,7 +17,7 @@ export class CardsService {
     private cardModel: mongoose.Model<Card>,
   ) {}
 
-  async findAll(query: Query): Promise<Card[]> {
+  async findAll(query: Query): Promise<CardResponse[]> {
     const resPerPage = 2;
     const currentPage = Number(query.page) || 1;
     const skip = resPerPage * (currentPage - 1);
@@ -37,13 +38,13 @@ export class CardsService {
     return cards;
   }
 
-  async create(card: Card, user: User): Promise<Card> {
+  async create(card: Card, user: User): Promise<CardResponse> {
     const data = Object.assign(card, { user: user._id });
     const res = await this.cardModel.create(data);
     return res;
   }
 
-  async findById(id: string): Promise<Card> {
+  async findById(id: string): Promise<CardResponse> {
     const isValidId = mongoose.isValidObjectId(id);
 
     if (!isValidId) {
@@ -59,7 +60,7 @@ export class CardsService {
     return card;
   }
 
-  async updateById(id: string, card: Card, user: User): Promise<Card> {
+  async updateById(id: string, card: Card, user: User): Promise<CardResponse> {
     const isValidId = mongoose.isValidObjectId(id);
 
     if (!isValidId) {
@@ -82,7 +83,7 @@ export class CardsService {
     });
   }
 
-  async deleteById(id: string, user: User): Promise<Card> {
+  async deleteById(id: string, user: User): Promise<CardResponse> {
     const isValidId = mongoose.isValidObjectId(id);
 
     if (!isValidId) {

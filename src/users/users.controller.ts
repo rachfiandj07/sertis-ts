@@ -1,6 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { SignUpDTO } from 'src/users/dto/signUp.dto';
 import { SignInDTO } from './dto/signIn.dto';
+import { CreateUserResponse, LoginUserResponse } from './interface/User';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -8,12 +9,12 @@ export class UsersController {
   constructor(private userService: UsersService) {}
 
   @Post('/signup')
-  signUp(@Body() signUpDto: SignUpDTO): Promise<{ token: string }> {
+  signUp(@Body() signUpDto: SignUpDTO): Promise<CreateUserResponse> {
     return this.userService.signUp(signUpDto);
   }
 
   @Post('/signin')
-  signIn(@Body() signInDto: SignInDTO): Promise<{ token: string }> {
+  signIn(@Body() signInDto: SignInDTO): Promise<LoginUserResponse> {
     return this.userService.signIn(signInDto);
   }
 }

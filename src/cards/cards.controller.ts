@@ -12,10 +12,10 @@ import {
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { AuthGuard } from '@nestjs/passport';
 import { CardsService } from './cards.service';
-import { Card } from './schemas/card.schema';
 import { CreateCardDTO } from './dto/createCard.dto';
 import { UpdateCardDTO } from './dto/updateCard.dto';
 import { RequestContext } from 'src/users/context/context';
+import { CardResponse } from './interfaces/card';
 
 @Controller('cards')
 export class CardsController {
@@ -23,7 +23,7 @@ export class CardsController {
 
   @Get()
   @UseGuards(AuthGuard())
-  async getAllBooks(@Query() query: ExpressQuery): Promise<Card[]> {
+  async getAllBooks(@Query() query: ExpressQuery): Promise<CardResponse[]> {
     return this.cardService.findAll(query);
   }
 
@@ -33,7 +33,7 @@ export class CardsController {
     @Body()
     card: CreateCardDTO,
     @RequestContext() requestContext,
-  ): Promise<Card> {
+  ): Promise<CardResponse> {
     const req = requestContext.user;
     return this.cardService.create(card, req);
   }
@@ -43,7 +43,7 @@ export class CardsController {
   async getBook(
     @Param('id')
     id: string,
-  ): Promise<Card> {
+  ): Promise<CardResponse> {
     return this.cardService.findById(id);
   }
 
@@ -55,7 +55,7 @@ export class CardsController {
     @Body()
     card: UpdateCardDTO,
     @RequestContext() requestContext,
-  ): Promise<Card> {
+  ): Promise<CardResponse> {
     const req = requestContext.user;
     return this.cardService.updateById(id, card, req);
   }
@@ -66,7 +66,7 @@ export class CardsController {
     @Param('id')
     id: string,
     @RequestContext() requestContext,
-  ): Promise<Card> {
+  ): Promise<CardResponse> {
     const req = requestContext.user;
     return this.cardService.deleteById(id, req);
   }
