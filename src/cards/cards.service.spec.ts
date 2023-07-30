@@ -165,6 +165,72 @@ describe('BookService', () => {
 
       expect(result.name).toEqual(card.name);
     });
+
+    it('should throw BadRequestException if ID is invalid', async () => {
+      const card = { name: 'Updated name' };
+      const id = '64c2c1802a06d43ed9ada955';
+
+      const isValidObjectIDMock = jest
+        .spyOn(mongoose, 'isValidObjectId')
+        .mockReturnValue(false);
+
+      await expect(cardService.updateById(mockCard._id,
+        card as any,
+        mockUser,)).rejects.toThrow(
+        BadRequestException,
+      );
+
+      expect(isValidObjectIDMock).toHaveBeenCalledWith(id);
+      isValidObjectIDMock.mockRestore();
+    });
+
+    it('should throw NotFoundException if card is not found', async () => {
+      const card = { name: 'Updated name' };
+
+      jest.spyOn(model, 'findById').mockResolvedValue(null);
+
+      await expect(cardService.updateById(mockCard._id,
+        card as any,
+        mockUser)).rejects.toThrow(
+        NotFoundException,
+      );
+
+      expect(model.findById).toHaveBeenCalledWith(mockCard._id);
+    });
+
+    it('should throw BadRequestException if not the author of the cards', async () => {
+      let mockId = '64c2c16a2a06d43ed9ada953';
+      const card = { name: 'Updated name' };
+
+      let mockObjectId: ObjectId = ObjectId.createFromHexString(mockId);
+
+      let mockUser = {
+        _id: myObjectId,
+        username: 'NaufalRDJ',
+        password: 'xcvg5hjbn1237'
+      };
+    
+      let mockNewCard = {
+        _id: '64c2c1802a06d43ed9ada955',
+        name: 'Quantum Physics',
+        status: true,
+        content: 'Lorem ipsum dolor sit amet',
+        category: Category.PHYSICS,
+        user: mockObjectId,
+      };
+      
+      jest.spyOn(model, 'findByIdAndDelete').mockResolvedValue(mockCard);
+
+      jest.spyOn(model, 'findById').mockResolvedValue(mockNewCard);
+      
+      await cardService.findById(mockNewCard._id);
+
+      await expect(cardService.updateById(mockCard._id,
+        card as any,
+        mockUser)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
   });
 
   describe('deleteById', () => {
@@ -182,6 +248,62 @@ describe('BookService', () => {
       expect(model.findByIdAndDelete).toHaveBeenCalledWith(mockCard._id);
 
       expect(result).toEqual(mockCard);
+    });
+
+    it('should throw BadRequestException if ID is invalid', async () => {
+      const id = 'invalid-id';
+
+      const isValidObjectIDMock = jest
+        .spyOn(mongoose, 'isValidObjectId')
+        .mockReturnValue(false);
+
+      await expect(cardService.deleteById(id, mockUser)).rejects.toThrow(
+        BadRequestException,
+      );
+
+      expect(isValidObjectIDMock).toHaveBeenCalledWith(id);
+      isValidObjectIDMock.mockRestore();
+    });
+
+    it('should throw NotFoundException if card is not found', async () => {
+      jest.spyOn(model, 'findById').mockResolvedValue(null);
+
+      await expect(cardService.deleteById(mockCard._id, mockUser)).rejects.toThrow(
+        NotFoundException,
+      );
+
+      expect(model.findById).toHaveBeenCalledWith(mockCard._id);
+    });
+
+    it('should throw BadRequestException if not the author of the cards', async () => {
+      let mockId = '64c2c16a2a06d43ed9ada953';
+
+      let mockObjectId: ObjectId = ObjectId.createFromHexString(mockId);
+
+      let mockUser = {
+        _id: myObjectId,
+        username: 'NaufalRDJ',
+        password: 'xcvg5hjbn1237'
+      };
+    
+      let mockNewCard = {
+        _id: '64c2c1802a06d43ed9ada955',
+        name: 'Quantum Physics',
+        status: true,
+        content: 'Lorem ipsum dolor sit amet',
+        category: Category.PHYSICS,
+        user: mockObjectId,
+      };
+      
+      jest.spyOn(model, 'findByIdAndDelete').mockResolvedValue(mockCard);
+
+      jest.spyOn(model, 'findById').mockResolvedValue(mockNewCard);
+      
+      await cardService.findById(mockNewCard._id);
+
+      await expect(cardService.deleteById(id, mockUser)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 });
